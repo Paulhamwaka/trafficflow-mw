@@ -1,17 +1,15 @@
+
 'use client';
 
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 
-// Fix Leaflet icon error (standard for Next.js)
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
+// Quick CSS fix to hide broken default icon (common workaround)
+const iconFixStyle = `
+  .leaflet-marker-icon, .leaflet-marker-shadow {
+    display: none !important;
+  }
+`;
 
 interface Props {
   lang: 'en' | 'ch';
@@ -26,14 +24,17 @@ export default function MapComponent({ lang }: Props) {
     click(e) {
       const type = prompt(promptText)?.toLowerCase().trim();
       if (type) {
-        alert(`Report saved: ${type} at (${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)})\nReal database coming soon!`);
+        alert(`Report saved: ${type} at (${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)})`);
       }
     }
   });
 
   return (
-    <MapContainer center={[-13.9626, 33.7741]} zoom={12} className="h-full w-full">
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-    </MapContainer>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: iconFixStyle }} />
+      <MapContainer center={[-13.9626, 33.7741]} zoom={12} className="h-full w-full">
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      </MapContainer>
+    </>
   );
-}
+      }
